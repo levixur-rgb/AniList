@@ -1,5 +1,6 @@
 package kg.levixur.anilist.controller;
 
+import kg.levixur.anilist.dto.student.request.StudentCreateRequest;
 import kg.levixur.anilist.entity.Student;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,13 @@ public class StudentController {
     private final AtomicLong idCounter = new AtomicLong(1);
 
     @PostMapping
-    public String addStudent(@RequestBody Student student) {
+    public String addStudent(@RequestBody StudentCreateRequest request) {
+        Student student = new Student();
         student.setId(idCounter.getAndIncrement());
+        student.setFirstName(request.firstName());
+        student.setLastName(request.lastName());
+        student.setAge(request.age());
+
         students.add(student);
         return "Студент успешно добавлен с ID: " + student.getId();
     }
