@@ -1,9 +1,8 @@
 package kg.levixur.anilist.dto.student.request;
 
-public record StudentCreateRequest(
+public record StudentUpdateRequest (
         String firstName,
         String lastName,
-        int age,
-        String password
-) {
+        int age
+){
 }
