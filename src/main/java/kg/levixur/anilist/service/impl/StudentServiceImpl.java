@@ -4,33 +4,39 @@ import kg.levixur.anilist.dto.student.request.StudentCreateRequest;
 import kg.levixur.anilist.dto.student.request.StudentUpdateRequest;
 import kg.levixur.anilist.dto.student.response.StudentResponse;
 import kg.levixur.anilist.entity.Student;
+import kg.levixur.anilist.repository.StudentRepository;
 import kg.levixur.anilist.service.StudentService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
+@Service
 public class StudentServiceImpl implements StudentService {
-    private List<Student> students = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+
+    private final StudentRepository studentRepository;
+
+    public StudentServiceImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     @Override
     public String addStudent(StudentCreateRequest request) {
         Student student = new Student();
-        student.setId(idCounter.getAndIncrement());
         student.setFirstName(request.firstName());
         student.setLastName(request.lastName());
         student.setAge(request.age());
         student.setPassword(request.password());
 
-        students.add(student);
-        return "Студент успешно добавлен с ID: " + student.getId();
+        Student savedStudent = studentRepository.save(student);
+        return "Студент успешно добавлен с ID: " + savedStudent.getId();
     }
 
     @Override
     public List<StudentResponse> getAllStudents() {
         List<StudentResponse> result = new ArrayList<>();
-        for (Student student: students ) {
+        for (Student student : studentRepository.findAll()) {
             StudentResponse response = new StudentResponse(
                     student.getId(),
                     student.getFirstName(),
@@ -45,13 +51,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public String updateStudent(Long id, StudentUpdateRequest request) {
-        for (Student student : students) {
-            if (student.getId().equals(id)) {
-                student.setFirstName(request.firstName());
-                student.setLastName((request.lastName()));
-                student.setAge(request.age());
-                return "Студент с ID " + id + " успешно обновлён!";
-            }
+        Optional<Student> studentOptional = studentRepository.findById(id);
+
+        if (studentOptional.isPresent()) {
+            Student student = studentOptional.get();
+            student.setFirstName(request.firstName());
+            student.setLastName(request.lastName());
+            student.setAge(request.age());
+            return "Студент с ID " + id + " успешно обновлён!";
         }
 
         return "Студент с ID " + id + " не найден!";
@@ -59,7 +66,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public String deleteStudent(Long id) {
-        boolean removed = students.removeIf(student -> student.getId().equals(id));
+        boolean removed = studentRepository.deleteById(id);
         if (removed) {
             return "Студент с ID " + id + " успешно удалён!";
         } else {
