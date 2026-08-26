@@ -1,8 +1,8 @@
 package kg.levixur.anilist.service;
 
+import kg.levixur.anilist.dto.student.StudentResponse;
 import kg.levixur.anilist.dto.student.request.StudentCreateRequest;
 import kg.levixur.anilist.dto.student.request.StudentUpdateRequest;
-import kg.levixur.anilist.dto.student.response.StudentResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

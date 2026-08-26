@@ -2,10 +2,12 @@ package kg.levixur.anilist.service.impl;
 
 import kg.levixur.anilist.dto.student.request.StudentCreateRequest;
 import kg.levixur.anilist.dto.student.request.StudentUpdateRequest;
-import kg.levixur.anilist.dto.student.response.StudentResponse;
+import kg.levixur.anilist.dto.student.StudentResponse;
 import kg.levixur.anilist.entity.Student;
 import kg.levixur.anilist.repository.StudentRepository;
 import kg.levixur.anilist.service.StudentService;
+import kg.levixur.anilist.mapper.StudentMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,13 +15,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
+    private final StudentMapper studentMapper;
 
     private final StudentRepository studentRepository;
-
-    public StudentServiceImpl(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
 
     @Override
     public String addStudent(StudentCreateRequest request) {
@@ -36,18 +36,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentResponse> getAllStudents() {
         List<StudentResponse> result = new ArrayList<>();
-        for (Student student : studentRepository.findAll()) {
-            StudentResponse response = new StudentResponse(
-                    student.getId(),
-                    student.getFirstName(),
-                    student.getLastName(),
-                    student.getAge());
 
+        for (Student student : studentRepository.findAll()) {
+            StudentResponse response = studentMapper.toResponse(student);
             result.add(response);
         }
 
         return result;
     }
+
 
     @Override
     public String updateStudent(Long id, StudentUpdateRequest request) {
@@ -66,11 +63,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public String deleteStudent(Long id) {
-        boolean removed = studentRepository.deleteById(id);
-        if (removed) {
-            return "Студент с ID " + id + " успешно удалён!";
-        } else {
-            return "Студент с ID " + id + " не найден!";
-        }
+        studentRepository.deleteById(id);
+        return "Студент с ID " + id + " успешно удалён!";
     }
 }
