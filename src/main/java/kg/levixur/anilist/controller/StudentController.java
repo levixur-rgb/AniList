@@ -23,9 +23,10 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<StudentResponse> getAllStudents() {
-            return studentService.getAllStudents();
+    public List<kg.levixur.anilist.dto.student.StudentResponse> getAllStudents() {
+        return studentService.getAllStudents();
     }
+
 
     @PutMapping("/{id}")
     public String updateStudent(@PathVariable Long id, @RequestBody StudentUpdateRequest request) {
